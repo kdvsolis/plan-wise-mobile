@@ -1,0 +1,119 @@
+﻿@page "/registration"
+@inject IJSRuntime JSRuntime
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@using System.IdentityModel.Tokens.Jwt;
+@using System.Net.Http.Json;
+
+<div class="container w-container">
+    <div class="form-wrapper">
+        <div class="w-form">
+            <EditForm Model="registerModel" OnValidSubmit="HandleValidSubmit">
+                <h1 class="heading">Sign Up</h1>
+                <div>
+                    <label for="signup-name">First Name</label>
+                    <InputText id="name" @bind-Value="registerModel.name" class="text-field-3 w-input" required />
+                </div>
+                <div class="text-field-wrapper">
+                    <label for="signup-email">Email</label>
+                    <InputText id="email" @bind-Value="registerModel.username" class="text-field-4 w-input" required />
+                </div>
+                <div>
+                    <label for="signup-password">Password</label>
+                    <InputText id="password" @bind-Value="registerModel.password" type="password" class="text-field-5 w-input" required />
+                </div>
+                <div>
+                    <label for="confirm-password">Confirm Password</label>
+                    <InputText id="confirmPassword" @bind-Value="registerModel.confirmPassword" type="password" class="text-field-5 w-input" required />
+                </div>
+                <button type="submit" class="uui-button-4 button-width w-button">Register</button>
+            </EditForm>
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="@(isRegistrationSuccessful ? "alert alert-success" : "alert alert-danger")" role="alert">@errorMessage</div>
+            }
+        </div>
+        <div>
+            <div>Already have an account? <a href="/login">Log in</a></div>
+        </div>
+    </div>
+</div>
+
+<style scoped>
+    @@import "/css/components.css";
+    @@import "/css/budgeting-app.css";
+</style>
+
+@code {
+    private RegisterModel registerModel = new RegisterModel();
+    private string errorMessage = string.Empty;
+
+    private bool isRegistrationSuccessful = false;
+
+    private async Task HandleValidSubmit()
+    {
+        if (registerModel.password != registerModel.confirmPassword)
+        {
+            errorMessage = "Passwords do not match.";
+            return;
+        }
+
+        var response = await Http.PostAsJsonAsync("/api/Auth/register", registerModel);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var result = await response.Content.ReadFromJsonAsync<RegisterResult>();
+            if (result!.success)
+            {
+                isRegistrationSuccessful = true;
+                errorMessage = "Thank you! Your email has been registered. Go to login page to sign in";
+            }
+            else
+            {
+                errorMessage = result.message;
+            }
+        }
+        else
+        {
+            errorMessage = "An error occurred while registering.";
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (isRegistrationSuccessful)
+        {
+            // Wait for 3 seconds before navigating to the login page
+            Task.Delay(3000).ContinueWith(_ => NavigationManager.NavigateTo("/login"));
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "token");
+        if (!string.IsNullOrEmpty(token))
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+
+            if (jwtToken.ValidTo > DateTime.UtcNow)
+            {
+                NavigationManager.NavigateTo("/");
+            }
+        }
+    }
+
+    public class RegisterModel
+    {
+        public string name { get; set; }
+        public string username { get; set; }
+        public string password { get; set; }
+        public string confirmPassword { get; set; }
+    }
+
+    public class RegisterResult
+    {
+        public bool success { get; set; }
+        public string message { get; set; }
+    }
+}

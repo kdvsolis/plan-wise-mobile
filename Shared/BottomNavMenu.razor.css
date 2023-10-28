@@ -1,0 +1,57 @@
+
+.bottombarcontainer .bottombar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    background: white;
+    width: 100%;
+    height: 55px;
+    bottom: 0;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.bottombarcontainer .bottombar #back {
+    width: 100%;
+    position: absolute;
+    background: white;
+    height: 45px;
+    bottom: 0;
+    z-index: 0;
+}
+
+.bottombarcontainer .bottombar input[type="radio"]:checked + .round {
+    transform: translate(0, -15px);
+    background: white;
+    border: 7px solid #512BD4;
+    padding-top: 12px;
+}
+
+.bottombarcontainer .bottombar input[type="radio"]:checked + .round svg {
+    color: #512BD4;
+}
+
+.bottombarcontainer .bottombar input {
+    display: none;
+}
+
+.bottombarcontainer .bottombar .round {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    /* background: white; */
+    border-radius: 50%;
+    transform: translate(0, 5px);
+    transition: transform 0.3s ease;
+    will-change: transform;
+    cursor: pointer;
+    z-index: 1;
+    text-align: center;
+    border: 7px solid transparent;
+}
+
+    .bottombarcontainer .bottombar .round svg {
+        height: 100%;
+        color: #aaa;
+        line-height: 45px;
+    }

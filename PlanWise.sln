@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34202.233
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanWise", "PlanWise.csproj", "{C3C77500-2F02-4C6B-B743-2EA7B4C1466B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C3C77500-2F02-4C6B-B743-2EA7B4C1466B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3C77500-2F02-4C6B-B743-2EA7B4C1466B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3C77500-2F02-4C6B-B743-2EA7B4C1466B}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{C3C77500-2F02-4C6B-B743-2EA7B4C1466B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3C77500-2F02-4C6B-B743-2EA7B4C1466B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3C77500-2F02-4C6B-B743-2EA7B4C1466B}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {56F77EB6-082A-46AA-A760-688015BC8E54}
+	EndGlobalSection
+EndGlobal

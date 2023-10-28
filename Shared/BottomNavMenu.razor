@@ -1,0 +1,112 @@
+﻿@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+@using System.IdentityModel.Tokens.Jwt;
+@inject NavigationManager NavManager
+
+
+<CascadingParameter Name="token" Value="@token" />
+@if (token != null)
+{
+    <div class="bottombarcontainer">
+        <div class="bottombar">
+            <input type="radio" name="tap" id="t0" checked="checked" @onchange="OnChange" value="categories">
+            <label class="round" for="t0">
+                <span class="icon">
+                    <img src="/images/category.svg" loading="lazy" alt="Expense">
+                </span>
+            </label>
+            <input type="radio" name="tap" id="t1" @onchange="OnChange" value="expenses">
+            <label class="round" for="t1">
+                <span class="icon">
+                    <img src="/images/expense.svg" loading="lazy" alt="Expense">
+                </span>
+            </label>
+            <input type="radio" name="tap" id="t2" @onchange="OnChange" value="income">
+            <label class="round" for="t2">
+                <span class="icon">
+                    <img src="/images/income.svg" loading="lazy" alt="Expense">
+                </span>
+            </label>
+            <input type="radio" name="tap" id="t3" @onchange="OnChange" value="budget-table">
+            <label class="round" for="t3">
+                <span class="icon">
+                    <img src="/images/budget-table.svg" loading="lazy" alt="Budget Table">
+                </span>
+            </label>
+            <input type="radio" name="tap" id="t4" @onchange="OnChange" value="budget-calendar">
+            <label class="round" for="t4">
+                <span class="icon">
+                    <span class="icon">
+                        <img src="/images/budget-calendar.svg" loading="lazy" alt="Budget Calendar">
+                    </span>
+                </span>
+            </label>
+            <div class="div" id="back"></div>
+        </div>
+    </div>
+}
+
+<script>
+    window.isSmallScreen = function () {
+        return window.matchMedia('(max-width: 992px)').matches;
+    }
+</script>
+
+@code {
+    [CascadingParameter]
+    public string token { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnLogin { get; set; }
+
+    private string UlStyle = null;
+    private bool IsSmallScreen = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        token = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "token");
+        IsSmallScreen = await JSRuntime.InvokeAsync<bool>("isSmallScreen");
+        UlStyle = $"visibility: {(token != null ? "visible" : IsSmallScreen ? "hidden; display: none; margin-top: 10px" : "hidden")}";
+        if (string.IsNullOrEmpty(token))
+        {
+            token = null;
+        }
+        else
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+
+            if (jwtToken.ValidTo < DateTime.UtcNow)
+            {
+                token = null;
+            }
+        }
+    }
+
+
+    private async void OnChange(ChangeEventArgs args)
+    {
+        NavManager.NavigateTo($"/{args.Value.ToString()}");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            token = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "token");
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleLogin(string token)
+    {
+        this.token = token;
+        StateHasChanged(); // Trigger a re-render
+    }
+
+    private async Task HandleSignOut()
+    {
+        await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "token");
+        NavigationManager.NavigateTo("/login");
+    }
+}
